@@ -1,0 +1,20 @@
+# Staging environment configuration
+import:
+  - globals.yaml
+
+vars:
+  stage: staging
+  environment: staging
+  region: ap-south-1
+
+# Configure components
+components:
+  terraform:
+    # Component instance name (can be anything)
+    my-bucket:
+      # Which Terraform component to use
+      metadata:
+        component: s3-bucket
+      # Component-specific variables
+      vars:
+        bucket_name: "test-bucket-atmos-staging"
