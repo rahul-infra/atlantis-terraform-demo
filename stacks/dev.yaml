@@ -17,4 +17,5 @@ components:
         component: s3-bucket
       # Component-specific variables
       vars:
-        bucket_name: "test-bucket-atmos"
+        bucket_name: "test-bucket-atmos-updated"
+        # Testing Atlantis automation
