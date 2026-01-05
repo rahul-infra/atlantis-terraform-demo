@@ -9,3 +9,23 @@ stacks:
   included_paths:
     - "**/*"
   name_pattern: "{stage}"
+
+integrations:
+  atlantis:
+    path: "atlantis.yaml"
+    config_templates:
+      config-1:
+        version: 3
+        automerge: false
+        delete_source_branch_on_merge: false
+    project_templates:
+      project-1:
+        name: "{tenant}-{environment}-{stage}-{component}"
+        workspace: "{workspace}"
+        dir: "{component_path}"
+        terraform_version: v1.0.0
+        autoplan:
+          enabled: true
+          when_modified:
+            - "**/*.tf"
+            - "stacks/**/*.yaml"
