@@ -45,13 +45,10 @@ Use these commands in PR comments:
 - `atlantis apply -p s3-bucket-dev` - Apply specific project
 - `atlantis unlock` - Unlock if stuck
 
-## Local Development
-
-See the instructions below for running Atlantis locally for testing.
-
 ## Environments
 
 - **dev** - Development environment
 - **staging** - Staging environment
+- **production** - Production environment
 
 Each environment is defined in `stacks/*.yaml` and uses the same Terraform components.
