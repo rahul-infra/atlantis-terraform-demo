@@ -7,7 +7,7 @@ workflows:
         - run: atmos terraform plan my-bucket -s $WORKSPACE
     apply:
       steps:
-        - run: atmos terraform apply my-bucket -s $WORKSPACE --auto-approve
+        - run: atmos terraform apply my-bucket -s $WORKSPACE -- -auto-approve
 
 projects:
   - name: dev-my-bucket
