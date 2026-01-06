@@ -18,10 +18,19 @@ integrations:
         version: 3
         automerge: false
         delete_source_branch_on_merge: false
+    workflow_templates:
+      atmos-workflow:
+        plan:
+          steps:
+            - run: atmos terraform plan $ATLANTIS_TERRAFORM_COMPONENT -s $ATLANTIS_TERRAFORM_STACK
+        apply:
+          steps:
+            - run: atmos terraform apply $ATLANTIS_TERRAFORM_COMPONENT -s $ATLANTIS_TERRAFORM_STACK
     project_templates:
-      project-1:
+      create-s3:
         name: "{tenant}-{environment}-{stage}-{component}"
         workspace: "{workspace}"
+        workflow: atmos-workflow
         dir: "{component_path}"
         terraform_version: v1.0.0
         autoplan:
