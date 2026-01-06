@@ -28,6 +28,7 @@ Thumbs.db
 
 # Atlantis
 .atlantis/
+atlantis-data/
 
 # Atmos
 .atmos/

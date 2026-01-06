@@ -1,0 +1,6 @@
+# Atlantis server-side config
+# Allows repo configs to define custom workflows for Atmos integration
+
+repos:
+  - id: /.*/
+    allowed_overrides: [workflow]

@@ -1,46 +1,33 @@
 version: 3
-automerge: false
-delete_source_branch_on_merge: false
 
-# Define projects for each Atmos component/stack combination
+workflows:
+  atmos:
+    plan:
+      steps:
+        - run: atmos terraform plan my-bucket -s $WORKSPACE
+    apply:
+      steps:
+        - run: atmos terraform apply my-bucket -s $WORKSPACE -- -auto-approve
+
 projects:
-  # S3 Bucket - Dev Environment
-  - name: s3-bucket-dev
+  - name: dev-my-bucket
     dir: components/terraform/s3-bucket
     workspace: dev
-    terraform_version: v1.0.0
+    workflow: atmos
     autoplan:
       when_modified:
         - "components/terraform/s3-bucket/**/*.tf"
         - "stacks/dev.yaml"
         - "stacks/globals.yaml"
       enabled: true
-    apply_requirements:
-      - approved
-    workflow: atmos-terraform
 
-  # S3 Bucket - Staging Environment
-  - name: s3-bucket-staging
+  - name: staging-my-bucket
     dir: components/terraform/s3-bucket
     workspace: staging
-    terraform_version: v1.0.0
+    workflow: atmos
     autoplan:
       when_modified:
         - "components/terraform/s3-bucket/**/*.tf"
         - "stacks/staging.yaml"
         - "stacks/globals.yaml"
       enabled: true
-    apply_requirements:
-      - approved
-    workflow: atmos-terraform
-
-# Custom workflow for Atmos
-workflows:
-  atmos-terraform:
-    plan:
-      steps:
-        - init
-        - plan
-    apply:
-      steps:
-        - apply
