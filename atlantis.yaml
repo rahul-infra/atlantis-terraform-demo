@@ -1,34 +1,33 @@
 version: 3
-automerge: false
-parallel_plan: false
-parallel_apply: false
-allowed_regexp_prefixes: []
-projects:
-  - name: -development-dev-my-bucket
-    workspace: dev-my-bucket
-    workflow: atmos-workflow
-    dir: components/terraform/s3-bucket
-    terraform_version: v1.0.0
-    autoplan:
-      enabled: true
-      when_modified:
-        - '**/*.tf'
-        - stacks/**/*.yaml
-  - name: -staging-staging-my-bucket
-    workspace: staging-my-bucket
-    workflow: atmos-workflow
-    dir: components/terraform/s3-bucket
-    terraform_version: v1.0.0
-    autoplan:
-      enabled: true
-      when_modified:
-        - '**/*.tf'
-        - stacks/**/*.yaml
+
 workflows:
-  atmos-workflow:
-    apply:
-      steps:
-        - run: atmos terraform apply $ATLANTIS_TERRAFORM_COMPONENT -s $ATLANTIS_TERRAFORM_STACK
+  atmos:
     plan:
       steps:
-        - run: atmos terraform plan $ATLANTIS_TERRAFORM_COMPONENT -s $ATLANTIS_TERRAFORM_STACK
+        - run: atmos terraform plan my-bucket -s $WORKSPACE
+    apply:
+      steps:
+        - run: atmos terraform apply my-bucket -s $WORKSPACE
+
+projects:
+  - name: dev-my-bucket
+    dir: components/terraform/s3-bucket
+    workspace: dev
+    workflow: atmos
+    autoplan:
+      when_modified:
+        - "components/terraform/s3-bucket/**/*.tf"
+        - "stacks/dev.yaml"
+        - "stacks/globals.yaml"
+      enabled: true
+
+  - name: staging-my-bucket
+    dir: components/terraform/s3-bucket
+    workspace: staging
+    workflow: atmos
+    autoplan:
+      when_modified:
+        - "components/terraform/s3-bucket/**/*.tf"
+        - "stacks/staging.yaml"
+        - "stacks/globals.yaml"
+      enabled: true
