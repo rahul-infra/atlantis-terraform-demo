@@ -1,0 +1,79 @@
+name: Terraform Validation
+
+on:
+  pull_request:
+    branches:
+      - main
+      - master
+    paths:
+      - 'components/**'
+      - '.github/workflows/**'
+
+permissions:
+  contents: read
+
+jobs:
+  validate-components:
+    name: Validate Terraform Components
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.0.0
+
+      - name: Terraform Format Check
+        id: fmt
+        run: |
+          echo "Checking Terraform formatting..."
+          terraform fmt -check -recursive components/
+        continue-on-error: true
+
+      - name: Terraform Format Results
+        if: steps.fmt.outcome == 'failure'
+        run: |
+          echo " Terraform formatting issues found!"
+          echo "Run 'terraform fmt -recursive components/' to fix"
+          exit 1
+
+      - name: Validate Each Component
+        run: |
+          echo "Validating all Terraform components..."
+          VALIDATION_FAILED=0
+
+          for component_dir in components/terraform/*/; do
+            if [ -d "$component_dir" ]; then
+              component_name=$(basename "$component_dir")
+              echo "::group::Validating component: $component_name"
+
+              cd "$component_dir"
+
+              # Initialize Terraform
+              if ! terraform init -backend=false; then
+                echo " Failed to initialize $component_name"
+                VALIDATION_FAILED=1
+              fi
+
+              # Validate configuration
+              if ! terraform validate; then
+                echo " Validation failed for $component_name"
+                VALIDATION_FAILED=1
+              fi
+
+              # Go back to root
+              cd - > /dev/null
+
+              echo "::endgroup::"
+            fi
+          done
+
+          if [ $VALIDATION_FAILED -eq 1 ]; then
+            echo " One or more components failed validation"
+            exit 1
+          fi
+
+          echo "All components validated successfully!"
